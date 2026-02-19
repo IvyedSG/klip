@@ -1,4 +1,4 @@
-# Klip — Análisis de Entrevistas Refinado
+# Klip — Análisis de Entrevistas
 
 Klip es un editor de video diseñado específicamente para el **análisis de entrevistas laborales**. Optimice su proceso de selección identificando competencias clave y filtrando el tiempo muerto con precisión.
 

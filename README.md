@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Klip — Análisis de Entrevistas Refinado
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Klip es un editor de video diseñado específicamente para el **análisis de entrevistas laborales**. Optimice su proceso de selección identificando competencias clave y filtrando el tiempo muerto con precisión.
 
-Currently, two official plugins are available:
+![Interfaz de Klip](https://via.placeholder.com/800x450/050505/FFFFFF?text=Interfaz+de+Klip)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Características principales
 
-## React Compiler
+- **Etiquetado de competencias**: Identifique y marque comportamientos específicos y habilidades blandas en tiempo real.
+- **Salto automático de relleno**: Omita con un solo clic las partes marcadas como relleno (silencios, muletillas o diálogos irrelevantes) durante la reproducción.
+- **Métricas de la entrevista**: Desglose instantáneo de tiempo de valor frente a tiempo de relleno.
+- **Navegación precisa**: Línea de tiempo de alta precisión y navegación por límites de segmentos para saltar entre momentos clave.
+- **Onboarding integrado**: Tour interactivo integrado para capacitar al equipo de selección en segundos.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+## Tecnologías utilizadas
 
-## Expanding the ESLint configuration
+- **Framework**: [React 19](https://react.dev/)
+- **Herramienta de construcción**: [Vite](https://vitejs.dev/)
+- **Estilos**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animaciones**: [Framer Motion](https://www.framer.com/motion/)
+- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Inicio rápido
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Requisitos previos
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [Node.js](https://nodejs.org/) (Se recomienda la versión LTS más reciente)
+- [npm](https://www.npmjs.com/) o [bun](https://bun.sh/)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Instalación
+
+1. Clone el repositorio:
+
+   ```bash
+   git clone https://github.com/IvyedSG/klip.git
+   cd klip
+   ```
+
+2. Instale las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Inicie el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+
+### Construcción para producción
+
+```bash
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+_Transforme su flujo de trabajo de selección con Klip._

@@ -1,32 +1,20 @@
-import React from 'react';
 import { Badge } from '../ui/badge';
-import type { Segment } from '../../hooks/use-video-editor';
+import { useVideoEditor } from '../../hooks/use-video-editor';
 
-interface SidebarProps {
-  segments: Segment[];
-  onRemoveSegment: (id: string) => void;
-  onSeek: (time: number) => void;
-  formatTime: (seconds: number) => string;
-  metrics: {
-    total: number;
-    trash: number;
-    useful: number;
-  };
-}
-
-export const Sidebar: React.FC<SidebarProps> = ({
-  segments,
-  onRemoveSegment,
-  onSeek,
-  formatTime,
-  metrics,
-}) => {
+export const Sidebar = () => {
+  const {
+    segments,
+    removeSegment,
+    seekTo,
+    formatTime,
+    metrics,
+  } = useVideoEditor();
 
   return (
-    <aside className="w-full h-full flex flex-col overflow-hidden shrink-0">
+    <aside id="tour-sidebar" className="w-full h-full flex flex-col overflow-hidden shrink-0">
       <div className="flex-1 min-h-0 flex flex-col">
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 flex flex-col gap-3">
-        <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] text-text-secondary/60 mb-3">Segmentos Etiquetados</h3>
+        <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] text-text-secondary/60 mb-3">Evidencias de Competencias</h3>
         
         {segments.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center opacity-20 text-center">
@@ -40,7 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <div 
                     key={s.id}
                     className="group relative bg-neutral-900/20 hover:bg-neutral-800/40 border border-border/10 rounded-2xl p-4 transition-all cursor-pointer"
-                    onClick={() => onSeek(s.start)}
+                    onClick={() => seekTo(s.start)}
                 >
                     <div className="flex justify-between items-start mb-2">
                         <div className="flex items-center gap-2.5">
@@ -48,7 +36,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <span className="text-[13px] font-bold tracking-tight text-text-primary">{s.label}</span>
                         </div>
                         <button 
-                            onClick={(e) => { e.stopPropagation(); onRemoveSegment(s.id); }}
+                            onClick={(e) => { e.stopPropagation(); removeSegment(s.id); }}
                             className="text-text-secondary hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity p-1"
                         >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

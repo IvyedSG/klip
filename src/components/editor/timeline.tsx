@@ -1,33 +1,28 @@
-import React, { useMemo } from 'react';
-import type { Segment } from '../../hooks/use-video-editor';
+import { useMemo, useState, type MouseEvent } from 'react';
+import { useVideoEditor } from '../../hooks/use-video-editor';
+import type { Segment } from '../../types/editor';
 
-interface TimelineProps {
-  duration: number;
-  currentTime: number;
-  segments: Segment[];
-  onSeek: (time: number) => void;
-  onRemoveSegment: (id: string) => void;
-}
+export const Timeline = () => {
+  const {
+    duration,
+    currentTime,
+    segments,
+    seekTo,
+    removeSegment
+  } = useVideoEditor();
 
-export const Timeline: React.FC<TimelineProps> = ({
-  duration,
-  currentTime,
-  segments,
-  onSeek,
-  onRemoveSegment,
-}) => {
-  const [hoverX, setHoverX] = React.useState<number | null>(null);
+  const [hoverX, setHoverX] = useState<number | null>(null);
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const timelineWidth = 100;
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
-    onSeek(percentage * duration);
+    seekTo(percentage * duration);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     setHoverX(x);
@@ -85,7 +80,7 @@ export const Timeline: React.FC<TimelineProps> = ({
         }}
         onClick={(e) => {
           e.stopPropagation();
-          onSeek(segment.start);
+          seekTo(segment.start);
         }}
         title={`${segment.label}: ${segment.start.toFixed(1)}s - ${segment.end.toFixed(1)}s`}
       >
@@ -94,19 +89,17 @@ export const Timeline: React.FC<TimelineProps> = ({
           {segment.label}
         </span>
         
-        {segment.id !== 'master-video' && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onRemoveSegment(segment.id);
-            }}
-            className="absolute right-1.5 w-5 h-5 bg-black/40 hover:bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/segment:opacity-100 transition-all z-40"
-          >
-            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            removeSegment(segment.id);
+          }}
+          className="absolute right-1.5 w-5 h-5 bg-black/40 hover:bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover/segment:opacity-100 transition-all z-40"
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4">
+            <path d="M18 6L6 18M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     );
   };
@@ -134,7 +127,7 @@ export const Timeline: React.FC<TimelineProps> = ({
   const totalCompHeight = compTracksCount * ROW_HEIGHT;
 
   return (
-    <div className="relative flex flex-col select-none bg-black">
+    <div id="tour-timeline" className="relative flex flex-col select-none bg-black">
       <div className="h-10 border-b border-white/10 relative bg-white/5 shrink-0 overflow-hidden">
         {timeMarkers}
       </div>
@@ -143,7 +136,7 @@ export const Timeline: React.FC<TimelineProps> = ({
         <div className="relative overflow-x-auto custom-scrollbar overflow-y-hidden">
           <div 
             className="relative cursor-crosshair min-w-full"
-            style={{ width: `${timelineWidth}%`, minHeight: `${84 + totalCompHeight}px` }}
+            style={{ width: `${timelineWidth}%`, minHeight: `${42 + totalCompHeight}px` }}
             onClick={handleClick}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -157,22 +150,11 @@ export const Timeline: React.FC<TimelineProps> = ({
                     <div className="h-full w-full bg-white/10" />
                 </div>
             )}
-            <div className="absolute top-0 left-0 right-0 h-[42px] border-b border-white/5 bg-amber-500/10">
-              {renderSegment({
-                id: 'master-video',
-                label: 'VIDEO',
-                start: 0,
-                end: duration,
-                type: 'competency',
-                color: '#FFB800'
-              }, 0)}
-            </div>
-            
-            <div className="absolute top-[42px] left-0 right-0 h-[42px] border-b border-white/5 bg-red-500/5">
+            <div className="absolute top-0 left-0 right-0 h-[42px] border-b border-white/5 bg-red-500/5">
               {trashSegments.map(s => renderSegment(s, 0))}
             </div>
-
-            <div className="absolute top-[84px] left-0 right-0 h-full">
+            
+            <div className="absolute top-[42px] left-0 right-0 h-full">
               {Array.from({ length: compTracksCount }).map((_, i) => (
                 <div 
                   key={i} 

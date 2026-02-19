@@ -1,36 +1,27 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import { Combobox } from '../ui/combobox';
-import type { Segment, SegmentType } from '../../hooks/use-video-editor';
+import { useVideoEditor } from '../../hooks/use-video-editor';
+import type { SegmentType } from '../../types/editor';
 
-interface TaggingControlsProps {
-  currentTime: number;
-  duration: number;
-  isPlaying: boolean;
-  onPlayPause: (playing: boolean) => void;
-  onSeekPrevious: () => void;
-  onSeekNext: () => void;
-  onAddSegment: (segment: Omit<Segment, 'id'>) => void;
-  formatTime: (seconds: number) => string;
-  competencies: Record<string, string>;
-  addCompetency: (name: string) => void;
-}
+export const TaggingControls = () => {
+  const {
+    currentTime,
+    duration,
+    isPlaying,
+    setIsPlaying,
+    seekToPreviousBoundary,
+    seekToNextBoundary,
+    addSegment,
+    formatTime,
+    competencies,
+    addCompetency,
+  } = useVideoEditor();
 
-export const TaggingControls: React.FC<TaggingControlsProps> = ({
-  currentTime,
-  duration,
-  isPlaying,
-  onPlayPause,
-  onSeekPrevious,
-  onSeekNext,
-  onAddSegment,
-  formatTime,
-  competencies,
-  addCompetency,
-}) => {
-  const [newLabel, setNewLabel] = useState('Comunicación');
+  const [selectedCompetency, setSelectedCompetency] = useState('Comunicación');
   const [newType, setNewType] = useState<SegmentType>('competency');
   const [startTime, setStartTime] = useState<number | null>(null);
+  const newLabel = newType === 'trash' ? 'Relleno' : selectedCompetency;
 
   const handleToggleTagging = () => {
     if (startTime === null) {
@@ -41,7 +32,7 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
       const actualEnd = Math.max(startTime, end);
       
       if (actualEnd - start > 0.5) {
-        onAddSegment({
+        addSegment({
           label: newType === 'trash' ? 'Relleno' : newLabel,
           start,
           end: actualEnd,
@@ -69,17 +60,17 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
     }));
 
   return (
-    <div className="h-full flex items-center justify-between px-8 gap-10">
+    <div id="tour-tagging-controls" className="h-full flex items-center justify-between px-8 gap-10">
       <div className="flex-1 flex items-center justify-start gap-8 min-w-[200px]">
         <div className="flex bg-black/60 p-1.5 rounded-xl border border-white/5 shrink-0">
           <button 
-            onClick={() => { setNewType('competency'); if (newLabel === 'Basura / Relleno') setNewLabel('Comunicación'); }}
+            onClick={() => setNewType('competency')}
             className={`px-4 py-1.5 rounded-lg text-[13px] font-black transition-all ${newType === 'competency' ? 'bg-accent text-white shadow-lg shadow-accent/20' : 'text-text-secondary/50 hover:text-white'}`}
           >
             COMPETENCIA
           </button>
           <button 
-            onClick={() => { setNewType('trash'); setNewLabel('Relleno'); }}
+            onClick={() => setNewType('trash')}
             className={`px-4 py-1.5 rounded-lg text-[13px] font-black transition-all ${newType === 'trash' ? 'bg-waste text-white shadow-lg shadow-waste/20' : 'text-text-secondary/50 hover:text-white'}`}
           >
             RELLENO
@@ -94,7 +85,7 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
 
         <div className="flex items-center gap-4 bg-black/60 p-1.5 rounded-2xl border border-white/5">
             <button 
-            onClick={onSeekPrevious}
+            onClick={seekToPreviousBoundary}
             className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-xl text-text-secondary hover:text-white transition-colors"
             title="Segmento anterior (←)"
             >
@@ -103,7 +94,7 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
             </svg>
             </button>
             <button 
-            onClick={() => onPlayPause(!isPlaying)}
+            onClick={() => setIsPlaying(!isPlaying)}
             className={`w-12 h-12 flex items-center justify-center rounded-xl transition-all ${isPlaying ? 'bg-white text-black' : 'bg-white/10 text-white hover:bg-white/15'}`}
             >
             {isPlaying ? (
@@ -118,7 +109,7 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
             )}
             </button>
             <button 
-            onClick={onSeekNext}
+            onClick={seekToNextBoundary}
             className="w-10 h-10 flex items-center justify-center hover:bg-white/5 rounded-xl text-text-secondary hover:text-white transition-colors"
             title="Siguiente segmento (→)"
             >
@@ -137,9 +128,9 @@ export const TaggingControls: React.FC<TaggingControlsProps> = ({
         <div className="w-64">
             {newType === 'competency' && (
             <Combobox 
-                value={newLabel}
-                onChange={setNewLabel}
-                onCreate={addCompetency}
+                value={selectedCompetency}
+                onChange={setSelectedCompetency}
+                onCreate={(name) => { addCompetency(name); setSelectedCompetency(name); }}
                 options={comboboxOptions}
                 className="w-full"
             />

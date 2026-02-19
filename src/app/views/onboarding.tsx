@@ -8,14 +8,14 @@ interface OnboardingViewProps {
   videoFile: File | null;
   onVideoSelect: (file: File) => void;
   onResetVideo: () => void;
-  onStartAnalysis: () => void;
+  onStartEditor: () => void;
 }
 
 export const OnboardingView: React.FC<OnboardingViewProps> = ({
   videoFile,
   onVideoSelect,
   onResetVideo,
-  onStartAnalysis,
+  onStartEditor,
 }) => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background selection:bg-accent/30">
@@ -62,7 +62,7 @@ export const OnboardingView: React.FC<OnboardingViewProps> = ({
                 </Button>
                 <Button 
                   className="shadow-lg shadow-accent/20"
-                  onClick={onStartAnalysis}
+                  onClick={onStartEditor}
                 >
                   Abrir Editor
                 </Button>

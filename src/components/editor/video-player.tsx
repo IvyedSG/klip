@@ -1,30 +1,44 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import { useVideoEditor } from '../../hooks/use-video-editor';
+import type { VideoPlayerHandle } from '../../types/editor';
 
 interface VideoPlayerProps {
-  videoRef: React.RefObject<HTMLVideoElement | null>;
   videoUrl: string;
-  onTimeUpdate: (time: number) => void;
-  onDurationChange: (duration: number) => void;
-  onPlayPause: (isPlaying: boolean) => void;
-  isPlaying: boolean;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({
-  videoRef,
-  videoUrl,
-  onTimeUpdate,
-  onDurationChange,
-  onPlayPause,
-  isPlaying,
-}) => {
+export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(({ videoUrl }, ref) => {
+  const videoInternalRef = useRef<HTMLVideoElement>(null);
+  const { 
+    setCurrentTime,
+    setDuration,
+    setIsPlaying,
+    isPlaying
+  } = useVideoEditor();
+
+  useImperativeHandle(ref, () => ({
+    play: async () => {
+        if (videoInternalRef.current) {
+            return videoInternalRef.current.play();
+        }
+    },
+    pause: () => videoInternalRef.current?.pause(),
+    seek: (time) => {
+      if (videoInternalRef.current) {
+        videoInternalRef.current.currentTime = time;
+      }
+    },
+    getDuration: () => videoInternalRef.current?.duration || 0,
+    getCurrentTime: () => videoInternalRef.current?.currentTime || 0,
+  }));
+
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoInternalRef.current;
     if (!video) return;
 
-    const handleTimeUpdate = () => onTimeUpdate(video.currentTime);
-    const handleDurationChange = () => onDurationChange(video.duration);
-    const handlePlay = () => onPlayPause(true);
-    const handlePause = () => onPlayPause(false);
+    const handleTimeUpdate = () => setCurrentTime(video.currentTime);
+    const handleDurationChange = () => setDuration(video.duration);
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
 
     video.addEventListener('timeupdate', handleTimeUpdate);
     video.addEventListener('durationchange', handleDurationChange);
@@ -37,10 +51,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       video.removeEventListener('play', handlePlay);
       video.removeEventListener('pause', handlePause);
     };
-  }, [videoRef, onTimeUpdate, onDurationChange, onPlayPause]);
+  }, [setCurrentTime, setDuration, setIsPlaying]);
 
   useEffect(() => {
-    const video = videoRef.current;
+    const video = videoInternalRef.current;
     if (!video) return;
 
     if (isPlaying && video.paused) {
@@ -48,15 +62,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     } else if (!isPlaying && !video.paused) {
       video.pause();
     }
-  }, [isPlaying, videoRef]);
+  }, [isPlaying]);
 
   return (
     <div className="relative group w-full h-full bg-black rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center">
       <video
-        ref={videoRef}
+        ref={videoInternalRef}
         src={videoUrl}
         className="max-w-full max-h-full object-contain"
       />
     </div>
   );
-};
+});

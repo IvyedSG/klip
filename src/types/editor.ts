@@ -28,12 +28,14 @@ export interface VideoEditorContextType {
   segments: Segment[];
   currentTime: number;
   duration: number;
+  virtualTime: number; 
+  virtualDuration: number;
+  virtualSegments: Segment[];
   isPlaying: boolean;
   skipTrash: boolean;
   metrics: EditorMetrics;
   competencies: Record<string, string>;
   
-  setSkipTrash: (skip: boolean) => void;
   setCurrentTime: (time: number) => void;
   setDuration: (duration: number) => void;
   setIsPlaying: (playing: boolean) => void;

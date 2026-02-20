@@ -19,8 +19,7 @@ const EditorContent: React.FC<EditorViewProps> = ({ videoFile, onBack }) => {
     videoRef,
     seekToPreviousBoundary, 
     seekToNextBoundary, 
-    skipTrash, 
-    setSkipTrash 
+    togglePlay 
   } = useVideoEditor();
   
   React.useEffect(() => {
@@ -34,12 +33,15 @@ const EditorContent: React.FC<EditorViewProps> = ({ videoFile, onBack }) => {
         seekToPreviousBoundary();
       } else if (e.key === 'ArrowRight') {
         seekToNextBoundary();
+      } else if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [seekToPreviousBoundary, seekToNextBoundary]);
+  }, [seekToPreviousBoundary, seekToNextBoundary, togglePlay]);
 
   return (
     <div id="editor-root" className="h-screen overflow-hidden bg-[#050505] text-text-primary flex flex-col px-12 lg:px-20 xl:px-32">
@@ -59,15 +61,6 @@ const EditorContent: React.FC<EditorViewProps> = ({ videoFile, onBack }) => {
         </div>
         
         <div className="flex items-center gap-8">
-            <div id="tour-skip-trash" className="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
-                <span className="text-[13px] uppercase tracking-[0.2em] text-text-secondary/60 font-black">Saltar Relleno</span>
-                <button 
-                    onClick={() => setSkipTrash(!skipTrash)}
-                    className={`relative w-9 h-5 rounded-full transition-all duration-300 ${skipTrash ? 'bg-accent shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-neutral-800'}`}
-                >
-                    <div className={`absolute top-1.5 w-2 h-2 bg-white rounded-full transition-all duration-300 ${skipTrash ? 'left-5.5' : 'left-1.5'}`} />
-                </button>
-            </div>
         </div>
       </header>
 

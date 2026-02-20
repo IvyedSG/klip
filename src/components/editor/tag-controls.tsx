@@ -8,6 +8,9 @@ export const TaggingControls = () => {
   const {
     currentTime,
     duration,
+    virtualTime,
+    virtualDuration,
+    skipTrash,
     isPlaying,
     setIsPlaying,
     seekToPreviousBoundary,
@@ -21,6 +24,8 @@ export const TaggingControls = () => {
   const [selectedCompetency, setSelectedCompetency] = useState('Comunicación');
   const [newType, setNewType] = useState<SegmentType>('competency');
   const [startTime, setStartTime] = useState<number | null>(null);
+  const displayTime = skipTrash ? virtualTime : currentTime;
+  const displayDuration = skipTrash ? virtualDuration : duration;
   const newLabel = newType === 'trash' ? 'Relleno' : selectedCompetency;
 
   const handleToggleTagging = () => {
@@ -80,7 +85,7 @@ export const TaggingControls = () => {
 
       <div className="flex items-center gap-8">
         <span className="text-[13px] font-black text-white tracking-tighter w-24 text-right">
-            {formatTimePrecision(currentTime)}
+            {formatTimePrecision(displayTime)}
         </span>
 
         <div className="flex items-center gap-4 bg-black/60 p-1.5 rounded-2xl border border-white/5">
@@ -120,7 +125,7 @@ export const TaggingControls = () => {
         </div>
 
         <span className="text-[13px] font-black text-white/20 tracking-tighter w-24">
-            {formatTimePrecision(duration)}
+            {formatTimePrecision(displayDuration)}
         </span>
       </div>
 
@@ -144,7 +149,7 @@ export const TaggingControls = () => {
         >
           <div className={`w-3 h-3 rounded-full z-10 ${startTime !== null ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)]' : 'bg-red-500'}`} />
           <span className="font-black tracking-wider text-[13px] uppercase z-10 whitespace-nowrap">
-            {startTime !== null ? `CORTAR (${formatTime(currentTime)})` : 'ETIQUETAR'}
+            {startTime !== null ? `CORTAR (${formatTime(displayTime)})` : 'ETIQUETAR'}
           </span>
           {startTime !== null && (
             <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-500 animate-shimmer" />

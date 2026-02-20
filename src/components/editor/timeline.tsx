@@ -1,25 +1,39 @@
 import { useMemo, useState, type MouseEvent } from 'react';
 import { useVideoEditor } from '../../hooks/use-video-editor';
+import { ScrollArea } from '../ui/scroll-area';
 import type { Segment } from '../../types/editor';
 
 export const Timeline = () => {
   const {
     duration,
     currentTime,
-    segments,
+    virtualDuration,
+    virtualTime,
+    virtualSegments,
     seekTo,
-    removeSegment
+    removeSegment,
+    skipTrash
   } = useVideoEditor();
 
   const [hoverX, setHoverX] = useState<number | null>(null);
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-  const timelineWidth = 100;
+  
+  const displayDuration = skipTrash ? virtualDuration : duration;
+  const displayTime = skipTrash ? virtualTime : currentTime;
+
+  const pixelsPerSecond = useMemo(() => {
+    if (displayDuration < 60) return 40; 
+    if (displayDuration < 300) return 20; 
+    return 12; 
+  }, [displayDuration]);
+
+  const timelineWidthPx = displayDuration * pixelsPerSecond;
+  const progress = displayDuration > 0 ? (displayTime / displayDuration) * 100 : 0;
 
   const handleClick = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const percentage = x / rect.width;
-    seekTo(percentage * duration);
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
+    seekTo(percentage * displayDuration);
   };
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
@@ -32,9 +46,8 @@ export const Timeline = () => {
     setHoverX(null);
   };
 
-  const { trashSegments, competencyTracks } = useMemo(() => {
-    const trash = segments.filter(s => s.type === 'trash');
-    const comps = segments.filter(s => s.type === 'competency').sort((a, b) => a.start - b.start);
+  const { competencyTracks } = useMemo(() => {
+    const comps = [...virtualSegments].sort((a, b) => a.start - b.start);
     
     const tracks: Segment[][] = [];
     comps.forEach(segment => {
@@ -51,17 +64,16 @@ export const Timeline = () => {
     });
 
     return { 
-      trashSegments: trash, 
       competencyTracks: tracks 
     };
-  }, [segments]);
+  }, [virtualSegments]);
 
   const ROW_HEIGHT = 42;
 
   const renderSegment = (segment: Segment, rowOffset: number) => {
-    if (duration === 0) return null;
-    const left = (segment.start / duration) * 100;
-    const width = Math.max(0.2, ((segment.end - segment.start) / duration) * 100); 
+    if (displayDuration === 0) return null;
+    const left = (segment.start / displayDuration) * 100;
+    const width = Math.max(0.2, ((segment.end - segment.start) / displayDuration) * 100);
     
     return (
       <div
@@ -105,79 +117,83 @@ export const Timeline = () => {
   };
 
   const timeMarkers = useMemo(() => {
-    if (duration === 0) return null;
+    if (displayDuration === 0) return null;
     const markers = [];
-    const interval = duration > 600 ? 60 : (duration > 60 ? 10 : 5);
     
-    for (let i = 0; i <= duration; i += interval) {
+    let interval = 1;
+    if (displayDuration > 600) interval = 30;     
+    else if (displayDuration > 300) interval = 15; 
+    else if (displayDuration > 60) interval = 5;   
+    
+    for (let i = 0; i <= displayDuration; i += interval) {
       markers.push(
         <div 
           key={i} 
-          className="absolute h-full border-l border-white/10 text-[13px] font-black text-white/50 pl-2 pt-2 flex items-start"
-          style={{ left: `${(i / duration) * 100}%` }}
+          className="absolute h-full border-l border-white/10 text-[11px] font-black text-white/40 pl-1.5 pt-1.5 flex items-start"
+          style={{ left: `${(i / displayDuration) * 100}%` }}
         >
           {Math.floor(i / 60)}:{(i % 60).toString().padStart(2, '0')}
         </div>
       );
     }
     return markers;
-  }, [duration]);
+  }, [displayDuration]);
 
-  const compTracksCount = Math.max(1, competencyTracks.length);
-  const totalCompHeight = compTracksCount * ROW_HEIGHT;
 
   return (
-    <div id="tour-timeline" className="relative flex flex-col select-none bg-black">
-      <div className="h-10 border-b border-white/10 relative bg-white/5 shrink-0 overflow-hidden">
-        {timeMarkers}
-      </div>
+    <div id="tour-timeline" className="relative flex flex-col select-none bg-[#020202] h-full border-t border-white/5 shadow-[inset_0_20px_50px_rgba(0,0,0,0.5)]">
+      <ScrollArea orientation="both" className="flex-1">
+        <div 
+          className="relative min-h-full"
+          style={{ width: `${Math.max(100, timelineWidthPx)}px`, height: `${Math.max(160, competencyTracks.length * ROW_HEIGHT + 32)}px` }}
+        >
+          <div className="h-8 border-b border-white/10 relative bg-white/[0.03] sticky top-0 z-[60] backdrop-blur-md">
+            {timeMarkers}
+          </div>
 
-      <div className="flex-1 flex flex-col">
-        <div className="relative overflow-x-auto custom-scrollbar overflow-y-hidden">
           <div 
-            className="relative cursor-crosshair min-w-full"
-            style={{ width: `${timelineWidth}%`, minHeight: `${42 + totalCompHeight}px` }}
+            className="relative cursor-crosshair min-h-full"
+            style={{ width: '100%' }}
             onClick={handleClick}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
-            {hoverX !== null && (
-                <div 
-                    className="absolute top-0 bottom-0 w-[2px] bg-white/20 z-[45] pointer-events-none"
-                    style={{ left: `${hoverX}%` }}
-                >
-                    <div className="absolute top-[12px] -left-1.5 w-3 h-3 bg-white/40 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.4)]" />
-                    <div className="h-full w-full bg-white/10" />
-                </div>
-            )}
-            <div className="absolute top-0 left-0 right-0 h-[42px] border-b border-white/5 bg-red-500/5">
-              {trashSegments.map(s => renderSegment(s, 0))}
-            </div>
-            
-            <div className="absolute top-[42px] left-0 right-0 h-full">
-              {Array.from({ length: compTracksCount }).map((_, i) => (
+            <div className="absolute inset-0 pointer-events-none">
+              {Array.from({ length: Math.max(3, competencyTracks.length) }).map((_, i) => (
                 <div 
                   key={i} 
-                  className="absolute left-0 right-0 border-b border-white/[0.03]" 
-                  style={{ top: `${i * ROW_HEIGHT}px`, height: `${ROW_HEIGHT}px` }}
+                  className={`border-b border-white/[0.03] ${i % 2 === 0 ? 'bg-white/[0.01]' : 'bg-transparent'}`}
+                  style={{ height: `${ROW_HEIGHT}px` }}
                 />
               ))}
-              
+            </div>
+
+            {hoverX !== null && (
+                <div 
+                    className="absolute top-0 bottom-0 w-[1px] bg-white/20 z-[45] pointer-events-none"
+                    style={{ left: `${hoverX}%` }}
+                >
+                    <div className="absolute top-[8px] -left-[4.5px] w-2.5 h-2.5 bg-white/40 rounded-full" />
+                    <div className="absolute inset-y-0 left-0 w-[1px] bg-white/10" />
+                </div>
+            )}
+
+            <div className="relative z-30 pt-0">
               {competencyTracks.map((track, trackIndex) => 
                 track.map(s => renderSegment(s, trackIndex * ROW_HEIGHT))
               )}
             </div>
 
             <div 
-                className="absolute top-0 bottom-0 w-[2px] bg-white z-50 pointer-events-none"
+                className="absolute top-0 bottom-0 w-[1px] bg-white/80 z-50 pointer-events-none shadow-[0_0_15px_rgba(255,255,255,0.4)]"
                 style={{ left: `${progress}%` }}
             >
-                <div className="absolute top-[12px] -left-1.5 w-3 h-3 bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)]" />
-                <div className="h-full w-full bg-white/40" />
+                <div className="absolute top-[8px] -left-[4.5px] w-2.5 h-2.5 bg-white rounded-full shadow-[0_0_10px_rgba(255,255,255,0.8)] z-[51]" />
+                <div className="h-full w-full bg-white" />
             </div>
           </div>
         </div>
-      </div>
+      </ScrollArea>
     </div>
   );
 };

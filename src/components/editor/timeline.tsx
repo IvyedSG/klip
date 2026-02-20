@@ -74,21 +74,23 @@ export const Timeline = () => {
     if (displayDuration === 0) return null;
     const left = (segment.start / displayDuration) * 100;
     const width = Math.max(0.2, ((segment.end - segment.start) / displayDuration) * 100);
+    const isActive = displayTime >= segment.start && displayTime <= segment.end;
     
     return (
       <div
         key={segment.id}
-        className="absolute h-8 rounded-lg border transition-all cursor-pointer flex items-center px-3 overflow-hidden group/segment z-30"
+        className={`absolute h-8 rounded-lg border transition-all cursor-pointer flex items-center px-3 overflow-hidden group/segment z-30 ${isActive ? 'ring-2 ring-white/50' : ''}`}
         style={{
           left: `${left}%`,
           width: `${width}%`,
           top: `${rowOffset + (ROW_HEIGHT - 32) / 2}px`,
-          backgroundColor: `${segment.color}99`, 
-          borderColor: `${segment.color}aa`,
+          backgroundColor: isActive ? `${segment.color}cc` : `${segment.color}99`, 
+          borderColor: isActive ? 'white' : `${segment.color}aa`,
           backdropFilter: 'blur(8px)',
           color: 'white',
           minWidth: '24px',
-          boxShadow: `0 4px 15px ${segment.color}22`
+          boxShadow: isActive ? `0 0 20px ${segment.color}66` : `0 4px 15px ${segment.color}22`,
+          opacity: isActive ? 1 : 0.8
         }}
         onClick={(e) => {
           e.stopPropagation();
@@ -97,7 +99,7 @@ export const Timeline = () => {
         title={`${segment.label}: ${segment.start.toFixed(1)}s - ${segment.end.toFixed(1)}s`}
       >
         <div className="absolute inset-0 bg-white/10 opacity-0 group-hover/segment:opacity-100 transition-opacity" />
-        <span className="text-[13px] font-bold uppercase truncate tracking-widest relative z-10 whitespace-nowrap">
+        <span className={`text-[13px] font-bold uppercase truncate tracking-widest relative z-10 whitespace-nowrap ${isActive ? 'text-white' : 'text-white/90'}`}>
           {segment.label}
         </span>
         

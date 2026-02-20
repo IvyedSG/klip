@@ -13,31 +13,25 @@ const steps: Step[] = [
   {
     targetId: 'editor-root',
     title: '¡Bienvenido a Klip!',
-    description: 'Optimiza el análisis de tus entrevistas laborales. Identifica competencias clave y elimina el tiempo muerto de forma eficiente.',
+    description: 'Transforma tus entrevistas en datos accionables. Identifica competencias clave y deja que nuestra IA oculte automáticamente el ruido.',
     position: 'center'
   },
   {
     targetId: 'tour-tagging-controls',
-    title: 'Controles de Etiquetado',
-    description: 'Selecciona "COMPETENCIA" o "RELLENO" según necesites. Haz clic en "ETIQUETAR" para marcar el inicio y el mismo botón cambiará a "CORTAR" para definir el segmento. Usa las flechas para navegar entre etiquetas.',
+    title: 'Etiquetado Inteligente',
+    description: 'Marca "COMPETENCIA" o "RELLENO". Al terminar un segmento, Klip recalcula el video para que el relleno sea invisible y el progreso sea fluido.',
     position: 'top'
   },
   {
-    targetId: 'tour-skip-trash',
-    title: 'Salto Automático',
-    description: 'Al activar "Saltar Relleno", el reproductor omitirá automáticamente todas las partes marcadas como relleno durante la reproducción.',
-    position: 'bottom'
-  },
-  {
     targetId: 'tour-sidebar',
-    title: 'Métricas de la Entrevista',
-    description: 'Visualiza el desglose de tiempo de valor vs. relleno y gestiona todas las evidencias de competencias detectadas.',
+    title: 'Evidencias de Competencia',
+    description: 'Analiza el desglose de tiempo útil vs. relleno. Haz clic en cualquier etiqueta para saltar instantáneamente a la evidencia en el video.',
     position: 'left'
   },
   {
     targetId: 'tour-timeline',
-    title: 'Línea de Análisis',
-    description: 'Navega por la conversación y ubica con precisión cada respuesta relevante del candidato.',
+    title: 'Navegación de Precisión',
+    description: 'Usa el scroll horizontal y vertical para moverte con fluidez. Las etiquetas activas se resaltan para guiar tu análisis.',
     position: 'top'
   }
 ];

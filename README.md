@@ -20,16 +20,31 @@ La navegación es robusta ante solapamientos porque cada límite de etiqueta se 
 
 ### 4. Diagrama del Modelo Temporal
 
+El siguiente esquema ilustra cómo el motor de Klip transforma el flujo físico original en una experiencia virtual continua:
+
 ```mermaid
 graph TD
-    A["Video Físico (120s)"] --> B{"Filtro de Relleno"}
-    B -- "Seg 1 (0-30s)" --> C1["Virtual Segment A (0-30s)"]
-    B -- "Relleno (30-50s)" --> D["Oculto / Saltado"]
-    B -- "Seg 2 (50-120s)" --> C2["Virtual Segment B (30-100s)"]
-
-    subgraph "Espacio Virtual (100s)"
-    C1 --- C2
+    subgraph "Nivel 1: Tiempo Físico (Real)"
+        P1["Etiqueta A (0-30s físico)"]
+        T1["Relleno 1 (30-45s físico)"]
+        P2["Etiqueta B (45-80s físico)"]
+        T2["Relleno 2 (80-120s físico)"]
     end
+
+    P1 & T1 & P2 & T2 --> Filter{"Motor de Filtro"}
+
+    Filter -- "Elimina Rellenos" --> Trash["Memoria de Saltos"]
+    Filter -- "Proyecta Útiles" --> VTL["Timeline Virtual Resultante"]
+
+    subgraph "Nivel 2: Tiempo Virtual (Percibido)"
+        V1["Virtual A (0-30s virtual)"]
+        V2["Virtual B (30-65s virtual)"]
+        VTL --- V1
+        V1 --- V2
+    end
+
+    style VTL fill:#f9f,stroke:#333,stroke-width:2px
+    style Filter fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ## Características principales

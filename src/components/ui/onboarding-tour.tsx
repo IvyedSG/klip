@@ -13,13 +13,13 @@ const steps: Step[] = [
   {
     targetId: 'editor-root',
     title: '¡Bienvenido a Klip!',
-    description: 'Transforma tus entrevistas en datos accionables. Identifica competencias clave y deja que nuestra IA oculte automáticamente el ruido.',
+    description: 'Identifica competencias clave y tiempo muerto para tener una entrevista con mayor calidad.',
     position: 'center'
   },
   {
     targetId: 'tour-tagging-controls',
     title: 'Etiquetado Inteligente',
-    description: 'Marca "COMPETENCIA" o "RELLENO". Al terminar un segmento, Klip recalcula el video para que el relleno sea invisible y el progreso sea fluido.',
+    description: 'Marca "COMPETENCIA" o "RELLENO" para segmentar partes del video, luego presiona el botón de "ETIQUETAR" para comenzar el segmento y con el mismo boton "CORTAR" para finalizarlo.',
     position: 'top'
   },
   {

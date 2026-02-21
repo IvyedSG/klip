@@ -18,19 +18,19 @@ const steps: Step[] = [
   },
   {
     targetId: 'tour-tagging-controls',
-    title: 'Etiquetado Inteligente',
+    title: 'Proceso de etiquetado',
     description: 'Marca "COMPETENCIA" o "RELLENO" para segmentar partes del video, luego presiona el botón de "ETIQUETAR" para comenzar el segmento y con el mismo boton "CORTAR" para finalizarlo.',
     position: 'top'
   },
   {
     targetId: 'tour-sidebar',
-    title: 'Evidencias de Competencia',
+    title: 'Evidencias de Competencias',
     description: 'Analiza el desglose de tiempo útil vs. relleno. Haz clic en cualquier etiqueta para saltar instantáneamente a la evidencia en el video.',
     position: 'left'
   },
   {
     targetId: 'tour-timeline',
-    title: 'Navegación de Precisión',
+    title: 'Navegación en el video',
     description: 'Usa el scroll horizontal y vertical para moverte con fluidez. Las etiquetas activas se resaltan para guiar tu análisis.',
     position: 'top'
   }
